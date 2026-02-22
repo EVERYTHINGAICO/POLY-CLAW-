@@ -1,0 +1,15 @@
+[workspace]
+members = [
+  "crates/common",
+  "crates/storage",
+  "crates/execution_tool",
+  "crates/execution_engine",
+  "crates/config",
+  "crates/fill_listener",
+  "crates/reconciliation",
+  "crates/market_registry",
+  "crates/risk_engine",
+  "crates/strategy",
+  "crates/ops_cli",
+]
+resolver = "2"
