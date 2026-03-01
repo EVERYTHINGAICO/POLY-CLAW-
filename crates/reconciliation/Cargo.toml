@@ -4,3 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fill_listener = { path = "../fill_listener" }
+storage = { path = "../storage" }
+thiserror = "1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt"] }
+uuid = { version = "1", features = ["v4"] }

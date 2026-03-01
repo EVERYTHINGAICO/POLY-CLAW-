@@ -55,9 +55,7 @@ impl RiskValidator for RiskEngine {
             ));
         }
 
-        if total_locked_balance + required_capital
-            > execution.max_total_capital_at_risk_usdc
-        {
+        if total_locked_balance + required_capital > execution.max_total_capital_at_risk_usdc {
             return Ok(RiskDecision::Rejected(
                 crate::types::RiskRejectionReason::GlobalExposureExceeded,
             ));

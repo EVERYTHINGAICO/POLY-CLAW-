@@ -18,11 +18,7 @@ pub struct RiskSnapshotBuilder<'a> {
 }
 
 impl<'a> RiskSnapshotBuilder<'a> {
-    pub fn build_snapshot(
-        &self,
-        market_id: &str,
-        outcome_id: &str,
-    ) -> crate::types::RiskSnapshot {
+    pub fn build_snapshot(&self, market_id: &str, outcome_id: &str) -> crate::types::RiskSnapshot {
         crate::types::RiskSnapshot {
             total_capital: self.funds.get_total_capital(),
             capital_at_risk: self.funds.get_capital_at_risk(),
@@ -31,10 +27,7 @@ impl<'a> RiskSnapshotBuilder<'a> {
         }
     }
 
-    pub fn get_market_expiration(
-        &self,
-        market_id: &str,
-    ) -> u64 {
+    pub fn get_market_expiration(&self, market_id: &str) -> u64 {
         self.markets.get_market_expiration(market_id)
     }
 }

@@ -1,9 +1,7 @@
 use std::sync::Arc;
 
 use market_registry::lifecycle::compute_lifecycle_state;
-use market_registry::{
-    LifecycleState, MarketRegistry, MarketRegistryConfig, PolymarketClient,
-};
+use market_registry::{LifecycleState, MarketRegistry, MarketRegistryConfig, PolymarketClient};
 use serde_json::json;
 use sqlx::SqlitePool;
 use storage::db::connect;
@@ -13,9 +11,14 @@ use wiremock::matchers::{method, path, query_param};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
 fn temp_db_url() -> String {
-    let db_path =
-        std::env::temp_dir().join(format!("market_registry_hardening_test_{}.db", Uuid::new_v4()));
-    format!("sqlite://{}?mode=rwc", db_path.to_string_lossy().replace('\\', "/"))
+    let db_path = std::env::temp_dir().join(format!(
+        "market_registry_hardening_test_{}.db",
+        Uuid::new_v4()
+    ));
+    format!(
+        "sqlite://{}?mode=rwc",
+        db_path.to_string_lossy().replace('\\', "/")
+    )
 }
 
 struct TestHarness {
@@ -28,9 +31,7 @@ async fn setup_harness(db_url: &str, markets_payload: serde_json::Value) -> Test
     let server = MockServer::start().await;
     mount_market_pages(&server, markets_payload).await;
 
-    let db = connect(db_url)
-        .await
-        .expect("storage db should initialize");
+    let db = connect(db_url).await.expect("storage db should initialize");
     run_migrations(&db.pool)
         .await
         .expect("storage migrations should succeed");
@@ -224,27 +225,21 @@ async fn correct_tradability_logic_and_token_mapping() {
         .await
         .expect("sync should succeed");
 
-    assert!(
-        harness
-            .registry
-            .is_market_tradable("mkt-1")
-            .await
-            .expect("is_market_tradable should succeed")
-    );
-    assert!(
-        !harness
-            .registry
-            .is_market_tradable("mkt-2")
-            .await
-            .expect("is_market_tradable should succeed")
-    );
-    assert!(
-        !harness
-            .registry
-            .is_market_tradable("mkt-3")
-            .await
-            .expect("is_market_tradable should succeed")
-    );
+    assert!(harness
+        .registry
+        .is_market_tradable("mkt-1")
+        .await
+        .expect("is_market_tradable should succeed"));
+    assert!(!harness
+        .registry
+        .is_market_tradable("mkt-2")
+        .await
+        .expect("is_market_tradable should succeed"));
+    assert!(!harness
+        .registry
+        .is_market_tradable("mkt-3")
+        .await
+        .expect("is_market_tradable should succeed"));
 
     let tradable = harness
         .registry
@@ -254,30 +249,24 @@ async fn correct_tradability_logic_and_token_mapping() {
     assert_eq!(tradable.len(), 1);
     assert_eq!(tradable[0].market.market_id, "mkt-1");
 
-    assert!(
-        harness
-            .registry
-            .get_market_by_token("yes-token-1")
-            .await
-            .expect("get_market_by_token should succeed")
-            .is_some()
-    );
-    assert!(
-        harness
-            .registry
-            .get_market_by_token("no-token-1")
-            .await
-            .expect("get_market_by_token should succeed")
-            .is_some()
-    );
-    assert!(
-        harness
-            .registry
-            .get_market_by_token("unknown-token")
-            .await
-            .expect("get_market_by_token should succeed")
-            .is_none()
-    );
+    assert!(harness
+        .registry
+        .get_market_by_token("yes-token-1")
+        .await
+        .expect("get_market_by_token should succeed")
+        .is_some());
+    assert!(harness
+        .registry
+        .get_market_by_token("no-token-1")
+        .await
+        .expect("get_market_by_token should succeed")
+        .is_some());
+    assert!(harness
+        .registry
+        .get_market_by_token("unknown-token")
+        .await
+        .expect("get_market_by_token should succeed")
+        .is_none());
 }
 
 #[tokio::test]
@@ -454,17 +443,8 @@ fn correct_lifecycle_transitions() {
     let future = now + 10_000_000;
     let past = now - 1;
 
-    let discovered = compute_lifecycle_state(
-        None,
-        false,
-        false,
-        false,
-        false,
-        future,
-        now,
-        60,
-        false,
-    );
+    let discovered =
+        compute_lifecycle_state(None, false, false, false, false, future, now, 60, false);
     assert_eq!(discovered, LifecycleState::DISCOVERED);
 
     let eligible = compute_lifecycle_state(

@@ -6,10 +6,7 @@ use tokio::time::MissedTickBehavior;
 
 use crate::market_registry::MarketRegistry;
 
-pub fn start_sync_loop_task(
-    registry: Arc<MarketRegistry>,
-    interval: Duration,
-) -> JoinHandle<()> {
+pub fn start_sync_loop_task(registry: Arc<MarketRegistry>, interval: Duration) -> JoinHandle<()> {
     tokio::spawn(async move {
         let _ = registry.initialize().await;
         let mut ticker = tokio::time::interval(interval);

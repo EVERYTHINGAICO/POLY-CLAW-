@@ -54,9 +54,8 @@ impl Database {
                 let operation_error = operation_error.context("atomic operation failed");
                 match tx.rollback().await {
                     Ok(()) => Err(operation_error),
-                    Err(rollback_error) => Err(operation_error.context(format!(
-                        "atomic rollback failed: {rollback_error:#}"
-                    ))),
+                    Err(rollback_error) => Err(operation_error
+                        .context(format!("atomic rollback failed: {rollback_error:#}"))),
                 }
             }
         }

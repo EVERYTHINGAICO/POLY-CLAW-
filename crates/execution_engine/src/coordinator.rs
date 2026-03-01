@@ -24,7 +24,10 @@ impl std::fmt::Debug for ExecutionCoordinator {
             .field("states", &"Arc<RwLock<HashMap<OrderId, ExecutionState>>>")
             .field("risk_validator_configured", &self.risk_validator.is_some())
             .field("funds_provider_configured", &self.funds_provider.is_some())
-            .field("market_provider_configured", &self.market_provider.is_some())
+            .field(
+                "market_provider_configured",
+                &self.market_provider.is_some(),
+            )
             .finish()
     }
 }
@@ -107,7 +110,9 @@ impl ExecutionCoordinator {
             .write()
             .map_err(|_| ExecutionEngineError::InternalError("state lock poisoned".to_string()))?;
 
-        let current = *guard.get(order_id).ok_or(ExecutionEngineError::InvalidOrder)?;
+        let current = *guard
+            .get(order_id)
+            .ok_or(ExecutionEngineError::InvalidOrder)?;
         if is_terminal(current) {
             return Err(ExecutionEngineError::InvalidStateTransition);
         }
@@ -116,19 +121,23 @@ impl ExecutionCoordinator {
         Ok(())
     }
 
-    fn validate_risk_request(&self, context: &ExecutionContext) -> Result<(), ExecutionEngineError> {
-        let risk_validator = self
-            .risk_validator
-            .as_ref()
-            .ok_or_else(|| ExecutionEngineError::InternalError("risk validator not configured".to_string()))?;
-        let funds_provider = self
-            .funds_provider
-            .as_ref()
-            .ok_or_else(|| ExecutionEngineError::InternalError("funds snapshot provider not configured".to_string()))?;
-        let market_provider = self
-            .market_provider
-            .as_ref()
-            .ok_or_else(|| ExecutionEngineError::InternalError("market snapshot provider not configured".to_string()))?;
+    fn validate_risk_request(
+        &self,
+        context: &ExecutionContext,
+    ) -> Result<(), ExecutionEngineError> {
+        let risk_validator = self.risk_validator.as_ref().ok_or_else(|| {
+            ExecutionEngineError::InternalError("risk validator not configured".to_string())
+        })?;
+        let funds_provider = self.funds_provider.as_ref().ok_or_else(|| {
+            ExecutionEngineError::InternalError(
+                "funds snapshot provider not configured".to_string(),
+            )
+        })?;
+        let market_provider = self.market_provider.as_ref().ok_or_else(|| {
+            ExecutionEngineError::InternalError(
+                "market snapshot provider not configured".to_string(),
+            )
+        })?;
 
         if context.created_at_ms < 0 {
             return Err(ExecutionEngineError::InvalidOrder);
@@ -159,7 +168,10 @@ impl ExecutionCoordinator {
         }
     }
 
-    pub fn get_state(&self, order_id: &OrderId) -> Result<Option<ExecutionState>, ExecutionEngineError> {
+    pub fn get_state(
+        &self,
+        order_id: &OrderId,
+    ) -> Result<Option<ExecutionState>, ExecutionEngineError> {
         let guard = self
             .states
             .read()
@@ -172,7 +184,9 @@ impl ExecutionCoordinator {
             .states
             .read()
             .map_err(|_| ExecutionEngineError::InternalError("state lock poisoned".to_string()))?;
-        let state = *guard.get(order_id).ok_or(ExecutionEngineError::InvalidOrder)?;
+        let state = *guard
+            .get(order_id)
+            .ok_or(ExecutionEngineError::InvalidOrder)?;
         Ok(is_terminal(state))
     }
 
@@ -216,7 +230,9 @@ impl ExecutionCoordinator {
         order_id: &OrderId,
         to: ExecutionState,
     ) -> Result<(), ExecutionEngineError> {
-        let from = *states.get(order_id).ok_or(ExecutionEngineError::InvalidOrder)?;
+        let from = *states
+            .get(order_id)
+            .ok_or(ExecutionEngineError::InvalidOrder)?;
         validate_transition(from, to)?;
         states.insert(order_id.clone(), to);
         Ok(())
@@ -238,14 +254,26 @@ pub fn validate_transition(
             | (ExecutionState::Submitted, ExecutionState::Acknowledged)
             | (ExecutionState::Submitted, ExecutionState::Rejected)
             | (ExecutionState::Submitted, ExecutionState::Failed)
-            | (ExecutionState::Acknowledged, ExecutionState::PartiallyFilled)
+            | (
+                ExecutionState::Acknowledged,
+                ExecutionState::PartiallyFilled
+            )
             | (ExecutionState::Acknowledged, ExecutionState::Filled)
-            | (ExecutionState::Acknowledged, ExecutionState::CancelRequested)
+            | (
+                ExecutionState::Acknowledged,
+                ExecutionState::CancelRequested
+            )
             | (ExecutionState::Acknowledged, ExecutionState::Rejected)
             | (ExecutionState::Acknowledged, ExecutionState::Failed)
-            | (ExecutionState::PartiallyFilled, ExecutionState::PartiallyFilled)
+            | (
+                ExecutionState::PartiallyFilled,
+                ExecutionState::PartiallyFilled
+            )
             | (ExecutionState::PartiallyFilled, ExecutionState::Filled)
-            | (ExecutionState::PartiallyFilled, ExecutionState::CancelRequested)
+            | (
+                ExecutionState::PartiallyFilled,
+                ExecutionState::CancelRequested
+            )
             | (ExecutionState::PartiallyFilled, ExecutionState::Failed)
             | (ExecutionState::CancelRequested, ExecutionState::Cancelled)
             | (ExecutionState::CancelRequested, ExecutionState::Failed)

@@ -67,15 +67,39 @@ fn build_request(
     }
 }
 
-fn assert_rejection(decision: Result<RiskDecision, crate::errors::RiskEngineError>, expected: RiskRejectionReason) {
+fn assert_rejection(
+    decision: Result<RiskDecision, crate::errors::RiskEngineError>,
+    expected: RiskRejectionReason,
+) {
     match (decision, expected) {
-        (Ok(RiskDecision::Rejected(RiskRejectionReason::InsufficientCapital)), RiskRejectionReason::InsufficientCapital)
-        | (Ok(RiskDecision::Rejected(RiskRejectionReason::MarketExposureExceeded)), RiskRejectionReason::MarketExposureExceeded)
-        | (Ok(RiskDecision::Rejected(RiskRejectionReason::GlobalExposureExceeded)), RiskRejectionReason::GlobalExposureExceeded)
-        | (Ok(RiskDecision::Rejected(RiskRejectionReason::OutcomeLimitExceeded)), RiskRejectionReason::OutcomeLimitExceeded)
-        | (Ok(RiskDecision::Rejected(RiskRejectionReason::ExpirationWindowViolation)), RiskRejectionReason::ExpirationWindowViolation)
-        | (Ok(RiskDecision::Rejected(RiskRejectionReason::RiskViolationSafeMode)), RiskRejectionReason::RiskViolationSafeMode) => {}
-        (other, expected) => panic!("unexpected decision {:?}, expected rejection {:?}", other, expected),
+        (
+            Ok(RiskDecision::Rejected(RiskRejectionReason::InsufficientCapital)),
+            RiskRejectionReason::InsufficientCapital,
+        )
+        | (
+            Ok(RiskDecision::Rejected(RiskRejectionReason::MarketExposureExceeded)),
+            RiskRejectionReason::MarketExposureExceeded,
+        )
+        | (
+            Ok(RiskDecision::Rejected(RiskRejectionReason::GlobalExposureExceeded)),
+            RiskRejectionReason::GlobalExposureExceeded,
+        )
+        | (
+            Ok(RiskDecision::Rejected(RiskRejectionReason::OutcomeLimitExceeded)),
+            RiskRejectionReason::OutcomeLimitExceeded,
+        )
+        | (
+            Ok(RiskDecision::Rejected(RiskRejectionReason::ExpirationWindowViolation)),
+            RiskRejectionReason::ExpirationWindowViolation,
+        )
+        | (
+            Ok(RiskDecision::Rejected(RiskRejectionReason::RiskViolationSafeMode)),
+            RiskRejectionReason::RiskViolationSafeMode,
+        ) => {}
+        (other, expected) => panic!(
+            "unexpected decision {:?}, expected rejection {:?}",
+            other, expected
+        ),
     }
 }
 
@@ -96,7 +120,14 @@ fn test_validate_allows_valid_order() {
         markets: &markets,
     };
     let snapshot = builder.build_snapshot("m1", "yes");
-    let request = build_request("m1", "yes", 10.0, 10.0, builder.get_market_expiration("m1"), 900);
+    let request = build_request(
+        "m1",
+        "yes",
+        10.0,
+        10.0,
+        builder.get_market_expiration("m1"),
+        900,
+    );
 
     let decision = engine.validate(&request, &snapshot);
     match decision {
@@ -122,9 +153,19 @@ fn test_rejects_insufficient_capital() {
         markets: &markets,
     };
     let snapshot = builder.build_snapshot("m1", "yes");
-    let request = build_request("m1", "yes", 10.0, 10.0, builder.get_market_expiration("m1"), 900);
+    let request = build_request(
+        "m1",
+        "yes",
+        10.0,
+        10.0,
+        builder.get_market_expiration("m1"),
+        900,
+    );
 
-    assert_rejection(engine.validate(&request, &snapshot), RiskRejectionReason::InsufficientCapital);
+    assert_rejection(
+        engine.validate(&request, &snapshot),
+        RiskRejectionReason::InsufficientCapital,
+    );
 }
 
 #[test]
@@ -144,7 +185,14 @@ fn test_rejects_market_exposure_exceeded() {
         markets: &markets,
     };
     let snapshot = builder.build_snapshot("m1", "yes");
-    let request = build_request("m1", "yes", 10.0, 10.0, builder.get_market_expiration("m1"), 900);
+    let request = build_request(
+        "m1",
+        "yes",
+        10.0,
+        10.0,
+        builder.get_market_expiration("m1"),
+        900,
+    );
 
     assert_rejection(
         engine.validate(&request, &snapshot),
@@ -169,7 +217,14 @@ fn test_rejects_global_exposure_exceeded() {
         markets: &markets,
     };
     let snapshot = builder.build_snapshot("m1", "yes");
-    let request = build_request("m1", "yes", 10.0, 10.0, builder.get_market_expiration("m1"), 900);
+    let request = build_request(
+        "m1",
+        "yes",
+        10.0,
+        10.0,
+        builder.get_market_expiration("m1"),
+        900,
+    );
 
     assert_rejection(
         engine.validate(&request, &snapshot),
@@ -194,7 +249,14 @@ fn test_rejects_outcome_limit_exceeded() {
         markets: &markets,
     };
     let snapshot = builder.build_snapshot("m1", "yes");
-    let request = build_request("m1", "yes", 10.0, 10.0, builder.get_market_expiration("m1"), 900);
+    let request = build_request(
+        "m1",
+        "yes",
+        10.0,
+        10.0,
+        builder.get_market_expiration("m1"),
+        900,
+    );
 
     assert_rejection(
         engine.validate(&request, &snapshot),
@@ -219,7 +281,14 @@ fn test_rejects_expiration_window_violation() {
         markets: &markets,
     };
     let snapshot = builder.build_snapshot("m1", "yes");
-    let request = build_request("m1", "yes", 10.0, 10.0, builder.get_market_expiration("m1"), 900);
+    let request = build_request(
+        "m1",
+        "yes",
+        10.0,
+        10.0,
+        builder.get_market_expiration("m1"),
+        900,
+    );
 
     assert_rejection(
         engine.validate(&request, &snapshot),

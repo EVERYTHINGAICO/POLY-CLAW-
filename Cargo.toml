@@ -6,6 +6,7 @@ members = [
   "crates/execution_engine",
   "crates/config",
   "crates/fill_listener",
+  "crates/intent_queue",
   "crates/reconciliation",
   "crates/market_registry",
   "crates/risk_engine",

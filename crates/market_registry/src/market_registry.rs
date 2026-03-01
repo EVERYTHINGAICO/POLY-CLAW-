@@ -242,15 +242,13 @@ fn normalize_market(
     let volume = parse_optional_f64(gamma.volume.as_ref());
     let liquidity = parse_optional_f64(gamma.liquidity.as_ref());
 
-    let category = gamma
-        .category
-        .clone()
-        .or_else(|| {
-            gamma
-                .events
-                .as_ref()
-                .and_then(|events| events.iter().find_map(|event| event.category.as_ref().cloned()))
-        });
+    let category = gamma.category.clone().or_else(|| {
+        gamma.events.as_ref().and_then(|events| {
+            events
+                .iter()
+                .find_map(|event| event.category.as_ref().cloned())
+        })
+    });
 
     let parsed_tokens =
         parse_yes_no_tokens(gamma.clob_token_ids.as_ref(), gamma.outcomes.as_ref())?;
@@ -263,11 +261,11 @@ fn normalize_market(
     let yes_token_id = parsed_tokens.0.or(previous_yes);
     let no_token_id = parsed_tokens.1.or(previous_no);
 
-    let has_complete_mapping = has_complete_mapping(yes_token_id.as_deref(), no_token_id.as_deref());
+    let has_complete_mapping =
+        has_complete_mapping(yes_token_id.as_deref(), no_token_id.as_deref());
 
-    let previous_state = previous_metadata.and_then(|metadata| {
-        LifecycleState::from_str(metadata.market.lifecycle_state.as_str())
-    });
+    let previous_state = previous_metadata
+        .and_then(|metadata| LifecycleState::from_str(metadata.market.lifecycle_state.as_str()));
 
     let lifecycle_state = compute_lifecycle_state(
         previous_state,
@@ -324,8 +322,9 @@ fn normalize_market(
                 .unwrap_or(1.0),
             fee_bps: parse_optional_i64(gamma.fee_bps.as_ref())
                 .or_else(|| {
-                    previous_metadata
-                        .and_then(|metadata| metadata.market_token.as_ref().map(|token| token.fee_bps))
+                    previous_metadata.and_then(|metadata| {
+                        metadata.market_token.as_ref().map(|token| token.fee_bps)
+                    })
                 })
                 .unwrap_or_default(),
             source: "gamma_api".to_string(),

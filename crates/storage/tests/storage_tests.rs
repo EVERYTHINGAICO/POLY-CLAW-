@@ -249,11 +249,12 @@ async fn wal_mode_enabled() {
 async fn migration_runs_successfully() {
     let pool = setup_migrated_pool().await;
 
-    let fills_exists: i64 =
-        sqlx::query_scalar("SELECT COUNT(1) FROM sqlite_master WHERE type='table' AND name='fills';")
-            .fetch_one(&pool)
-            .await
-            .expect("table lookup should succeed");
+    let fills_exists: i64 = sqlx::query_scalar(
+        "SELECT COUNT(1) FROM sqlite_master WHERE type='table' AND name='fills';",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("table lookup should succeed");
 
     assert_eq!(fills_exists, 1);
 }
@@ -328,7 +329,13 @@ async fn unique_constraints_enforced() {
     let pool = setup_migrated_pool().await;
     seed_market(&pool, "market-btc-5m").await;
 
-    seed_order(&pool, "market-btc-5m", "order-a", "exchange-order-duplicate").await;
+    seed_order(
+        &pool,
+        "market-btc-5m",
+        "order-a",
+        "exchange-order-duplicate",
+    )
+    .await;
 
     let duplicate_exchange_order = OpenOrder {
         order_id: "order-b".to_string(),
@@ -478,22 +485,26 @@ async fn atomic_fill_commit() {
     let result = apply_fill_atomically(&mut tx.tx, &fill)
         .await
         .expect("apply_fill_atomically should commit successfully");
-    tx.commit().await.expect("transaction commit should succeed");
+    tx.commit()
+        .await
+        .expect("transaction commit should succeed");
 
     assert!(!result.already_applied);
     assert!(result.position_updated);
     assert!(result.ledger_entry_id.is_some());
     assert!(result.cursor_advanced);
     assert_eq!(result.order_status.as_deref(), Some("PARTIALLY_FILLED"));
-    assert!(approx_eq(result.order_filled_size.unwrap_or_default(), 100.0));
+    assert!(approx_eq(
+        result.order_filled_size.unwrap_or_default(),
+        100.0
+    ));
 
-    let (filled_size, status): (f64, String) = sqlx::query_as(
-        "SELECT filled_size, status FROM open_orders WHERE order_id = ?",
-    )
-    .bind(order_id)
-    .fetch_one(&pool)
-    .await
-    .expect("order should exist after atomic fill");
+    let (filled_size, status): (f64, String) =
+        sqlx::query_as("SELECT filled_size, status FROM open_orders WHERE order_id = ?")
+            .bind(order_id)
+            .fetch_one(&pool)
+            .await
+            .expect("order should exist after atomic fill");
     assert!(approx_eq(filled_size, 100.0));
     assert_eq!(status, "PARTIALLY_FILLED");
 
@@ -525,11 +536,12 @@ async fn atomic_fill_commit() {
     assert!(approx_eq(reserved, 0.0));
     assert!(approx_eq(settlement_pending, 0.0));
 
-    let (cursor_ts, cursor_fill_id): (i64, Option<String>) =
-        sqlx::query_as("SELECT last_exchange_ts_ms, last_fill_id FROM fill_ingest_cursor WHERE id = 1")
-            .fetch_one(&pool)
-            .await
-            .expect("cursor row should exist");
+    let (cursor_ts, cursor_fill_id): (i64, Option<String>) = sqlx::query_as(
+        "SELECT last_exchange_ts_ms, last_fill_id FROM fill_ingest_cursor WHERE id = 1",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("cursor row should exist");
     assert_eq!(cursor_ts, 1_700_000_010_000);
     assert_eq!(cursor_fill_id.as_deref(), Some("fill-atomic-commit-1"));
 
@@ -635,11 +647,12 @@ async fn atomic_fill_rollback() {
         .expect("ledger row count should be readable");
     assert_eq!(ledger_rows, 1);
 
-    let (cursor_ts, cursor_fill_id): (i64, Option<String>) =
-        sqlx::query_as("SELECT last_exchange_ts_ms, last_fill_id FROM fill_ingest_cursor WHERE id = 1")
-            .fetch_one(&pool)
-            .await
-            .expect("cursor row should exist");
+    let (cursor_ts, cursor_fill_id): (i64, Option<String>) = sqlx::query_as(
+        "SELECT last_exchange_ts_ms, last_fill_id FROM fill_ingest_cursor WHERE id = 1",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("cursor row should exist");
     assert_eq!(cursor_ts, 0);
     assert!(cursor_fill_id.is_none());
 }
@@ -671,11 +684,12 @@ async fn cursor_monotonic() {
         .expect("same timestamp older fill id should no-op without error");
     tx3.commit().await.expect("commit should succeed");
 
-    let (cursor_ts, cursor_fill_id): (i64, Option<String>) =
-        sqlx::query_as("SELECT last_exchange_ts_ms, last_fill_id FROM fill_ingest_cursor WHERE id = 1")
-            .fetch_one(&pool)
-            .await
-            .expect("cursor row should exist");
+    let (cursor_ts, cursor_fill_id): (i64, Option<String>) = sqlx::query_as(
+        "SELECT last_exchange_ts_ms, last_fill_id FROM fill_ingest_cursor WHERE id = 1",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("cursor row should exist");
     assert_eq!(cursor_ts, 100);
     assert_eq!(cursor_fill_id.as_deref(), Some("fill-100"));
 }

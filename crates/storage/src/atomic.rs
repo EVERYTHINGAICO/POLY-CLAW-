@@ -33,7 +33,8 @@ pub async fn apply_fill_atomically(
     let inserted = fills::insert_fill_tx(tx, fill).await?;
 
     if !inserted {
-        advance_fill_cursor_atomically(tx, fill.exchange_ts_ms, Some(fill.fill_id.as_str())).await?;
+        advance_fill_cursor_atomically(tx, fill.exchange_ts_ms, Some(fill.fill_id.as_str()))
+            .await?;
         return Ok(ApplyFillResult {
             already_applied: true,
             order_filled_size: None,
@@ -213,20 +214,29 @@ async fn update_position_from_fill(tx: &mut Transaction<'_, Sqlite>, fill: &Fill
     .await
     .context("failed to load existing position for fill application")?;
 
-    let (mut yes_qty, mut no_qty, mut avg_yes, mut avg_no, mut realized_pnl, unrealized_pnl, status) =
-        existing_position.unwrap_or((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "OPEN".to_string()));
+    let (
+        mut yes_qty,
+        mut no_qty,
+        mut avg_yes,
+        mut avg_no,
+        mut realized_pnl,
+        unrealized_pnl,
+        status,
+    ) = existing_position.unwrap_or((0.0, 0.0, 0.0, 0.0, 0.0, 0.0, "OPEN".to_string()));
 
     let fee_usdc = fill.fee_usdc.unwrap_or(0.0);
 
     if is_yes_token {
-        let (new_qty, new_avg, realized_delta) =
-            apply_fill_to_outcome_bucket(yes_qty, avg_yes, &fill.side, fill.size, fill.price, fee_usdc)?;
+        let (new_qty, new_avg, realized_delta) = apply_fill_to_outcome_bucket(
+            yes_qty, avg_yes, &fill.side, fill.size, fill.price, fee_usdc,
+        )?;
         yes_qty = new_qty;
         avg_yes = new_avg;
         realized_pnl += realized_delta;
     } else {
-        let (new_qty, new_avg, realized_delta) =
-            apply_fill_to_outcome_bucket(no_qty, avg_no, &fill.side, fill.size, fill.price, fee_usdc)?;
+        let (new_qty, new_avg, realized_delta) = apply_fill_to_outcome_bucket(
+            no_qty, avg_no, &fill.side, fill.size, fill.price, fee_usdc,
+        )?;
         no_qty = new_qty;
         avg_no = new_avg;
         realized_pnl += realized_delta;
@@ -281,10 +291,16 @@ fn apply_fill_to_outcome_bucket(
 
             let new_qty = (old_qty - fill_size).max(0.0);
             let realized_delta = (fill_size * (fill_price - old_avg)) - fee_usdc;
-            let new_avg = if new_qty <= FP_TOLERANCE { 0.0 } else { old_avg };
+            let new_avg = if new_qty <= FP_TOLERANCE {
+                0.0
+            } else {
+                old_avg
+            };
             Ok((new_qty, new_avg, realized_delta))
         }
-        other => Err(anyhow!("unsupported fill side for position update: {other}")),
+        other => Err(anyhow!(
+            "unsupported fill side for position update: {other}"
+        )),
     }
 }
 
@@ -351,8 +367,14 @@ async fn latest_ledger_snapshot(tx: &mut Transaction<'_, Sqlite>) -> Result<Ledg
     .await
     .context("failed to read latest funds ledger snapshot")?;
 
-    let (total_balance, available_balance, locked_balance, reserved_balance, settlement_pending_balance) =
-        snapshot.ok_or_else(|| anyhow!("funds_ledger is empty; bootstrap ledger state is required"))?;
+    let (
+        total_balance,
+        available_balance,
+        locked_balance,
+        reserved_balance,
+        settlement_pending_balance,
+    ) = snapshot
+        .ok_or_else(|| anyhow!("funds_ledger is empty; bootstrap ledger state is required"))?;
 
     Ok(LedgerSnapshot {
         total_balance,

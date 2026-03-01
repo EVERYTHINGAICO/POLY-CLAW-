@@ -96,7 +96,9 @@ impl PolymarketClient {
                         });
                     }
 
-                    let sleep_secs = retry_after.unwrap_or(RETRY_BACKOFF_SECS[attempt]).min(MAX_BACKOFF_SECS);
+                    let sleep_secs = retry_after
+                        .unwrap_or(RETRY_BACKOFF_SECS[attempt])
+                        .min(MAX_BACKOFF_SECS);
                     tokio::time::sleep(Duration::from_secs(sleep_secs)).await;
                     attempt += 1;
                 }

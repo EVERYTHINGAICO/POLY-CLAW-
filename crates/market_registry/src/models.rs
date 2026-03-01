@@ -130,12 +130,8 @@ pub struct GammaEvent {
 #[serde(untagged)]
 pub enum GammaMarketsResponse {
     List(Vec<GammaMarket>),
-    Wrapped {
-        data: Vec<GammaMarket>,
-    },
-    WrappedMarkets {
-        markets: Vec<GammaMarket>,
-    },
+    Wrapped { data: Vec<GammaMarket> },
+    WrappedMarkets { markets: Vec<GammaMarket> },
 }
 
 impl GammaMarketsResponse {

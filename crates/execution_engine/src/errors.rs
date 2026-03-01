@@ -21,6 +21,12 @@ pub enum ExecutionEngineError {
     #[error("risk rejected: {0:?}")]
     RiskRejected(risk_engine::types::RiskRejectionReason),
 
+    #[error("invalid fill event: {0}")]
+    InvalidFillEvent(String),
+
+    #[error("reconciliation failure: {0}")]
+    ReconciliationFailure(String),
+
     #[error("execution failed")]
     ExecutionFailed,
 
