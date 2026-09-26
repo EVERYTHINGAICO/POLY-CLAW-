@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: "POLY-CLAW: Rust Execution Architecture for Polymarket Research"
+message: "If you use this research software, please cite it."
+type: software
+authors:
+  - name: "Everything AI Co"
+repository-code: "https://github.com/EVERYTHINGAICO/POLY-CLAW-"
+abstract: "Experimental Rust research system for Polymarket execution architecture, risk gating, market lifecycle tracking, persistence, and reconciliation."
+license: Apache-2.0
+version: "0.1.0-research"
+date-released: "2026-09-26"
