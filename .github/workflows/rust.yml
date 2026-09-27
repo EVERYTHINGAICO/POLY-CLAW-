@@ -1,4 +1,4 @@
-name: Rust
+name: Validation
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  test:
-    name: cargo test
+  rust:
+    name: Rust workspace
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +23,36 @@ jobs:
 
       - name: Test workspace
         run: cargo test --workspace
+
+  atlas:
+    name: Architecture atlas
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            tools/execution-architecture-atlas/backend/package-lock.json
+            tools/execution-architecture-atlas/frontend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: tools/execution-architecture-atlas/backend
+        run: npm ci
+
+      - name: Typecheck atlas backend
+        working-directory: tools/execution-architecture-atlas/backend
+        run: npm run typecheck
+
+      - name: Install frontend dependencies
+        working-directory: tools/execution-architecture-atlas/frontend
+        run: npm ci
+
+      - name: Build atlas frontend
+        working-directory: tools/execution-architecture-atlas/frontend
+        run: npm run build

@@ -57,6 +57,12 @@ crates/
 
 infrastructure/
   migrations/         SQLite schema
+
+tools/
+  execution-architecture-atlas/
+                       React/Vite + Node/TypeScript atlas for visualizing the
+                       POLY-CLAW crate graph, execution pipeline, live-state
+                       surfaces, and architecture evidence
 ```
 
 ## Architecture
@@ -82,6 +88,27 @@ Strategy boundary -> Intent queue -> Risk engine
 
 The intended production invariant is simple: strategy code proposes intent, risk code decides admissibility, and execution code owns mutation against the exchange.
 
+## Architecture Atlas
+
+The repository includes an architecture visualization tool at [tools/execution-architecture-atlas](tools/execution-architecture-atlas/README.md). It is intentionally separate from the Rust workspace: it does not modify `Cargo.toml`, does not add Rust dependencies, and can be installed or run independently.
+
+The atlas provides:
+
+- A 3D graph of crates, modules, dependencies, and execution surfaces.
+- A visual pipeline from market data through strategy, risk, intent, execution, and reconciliation.
+- Inspector panels for architecture review, operational state, preflight checks, positions, capital, alerts, event timelines, session playback, and state machines.
+- Backend tools for graph generation, API serving, diagram export, and optional Jaeger trace overlay.
+
+Validated local commands:
+
+```bash
+cd tools/execution-architecture-atlas/backend
+npm run typecheck
+
+cd ../frontend
+npm run build
+```
+
 ## Quick Start
 
 Install Rust with Cargo, then run:
@@ -96,11 +123,37 @@ To inspect the workspace:
 cargo metadata --format-version 1
 ```
 
+To run the atlas locally:
+
+```bash
+cd tools/execution-architecture-atlas/backend
+npm ci
+npm run generate -- --workspace ../..
+npm run serve
+```
+
+In another terminal:
+
+```bash
+cd tools/execution-architecture-atlas/frontend
+npm ci
+npm run dev
+```
+
+Open `http://localhost:5173`.
+
 The repository currently contains an architecture-oriented execution core. It is not a turnkey live-trading application and should not be connected to live funds without further review, exchange-adapter hardening, secrets handling, rate-limit policy, incident runbooks, and forward-testing evidence.
 
 ## Research Program
 
 The publication framing is in [docs/research/research-program.md](docs/research/research-program.md). It defines the scope, falsifiable claims, threat model, and evidence gates needed before any stronger operational or trading claim can be made.
+
+## Versioned Development Evidence
+
+- [VERSION](VERSION) identifies the current private research baseline.
+- [CHANGELOG.md](CHANGELOG.md) summarizes versioned development work.
+- [Development methodology](docs/development/development-methodology.md) documents the engineering and research method.
+- [Release notes](docs/releases/v0.1.0-private-research.md) define what this private review version does and does not claim.
 
 ## Safety And Responsibility
 

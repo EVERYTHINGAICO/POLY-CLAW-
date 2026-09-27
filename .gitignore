@@ -1,6 +1,14 @@
 target/
 **/target/
 
+# JavaScript / TypeScript tool artifacts
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+tools/execution-architecture-atlas/exports/
+tools/execution-architecture-atlas/**/exports/
+
 # Environment files
 .env
 .env.*
