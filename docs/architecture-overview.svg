@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 250" role="img" aria-labelledby="title desc">
+<title id="title">POLY-CLAW · Execution boundaries</title><desc id="desc">Architecture overview: strategy intent passes through risk checks before execution and reconciliation.</desc>
+<rect width="1040" height="250" rx="18" fill="#101827"/>
+<text x="34" y="42" font-family="Arial,sans-serif" font-size="24" font-weight="700" fill="#f8fafc">POLY-CLAW · Execution boundaries</text>
+<text x="34" y="72" font-family="Arial,sans-serif" font-size="14" fill="#b5c4d8">Architecture overview: strategy intent passes through risk checks before execution and reconciliation.</text>
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#78c8c1"/></marker></defs>
+<rect x="34" y="108" width="220" height="100" rx="12" fill="#1d2c42" stroke="#38526d"/>
+<text x="50" y="143" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#f1f5f9">Market + strategy</text>
+<text x="50" y="174" font-family="Arial,sans-serif" font-size="13" fill="#b5c4d8">Metadata and order intent</text>
+<path d="M257 158 H277" stroke="#78c8c1" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="282" y="108" width="220" height="100" rx="12" fill="#1d2c42" stroke="#38526d"/>
+<text x="298" y="143" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#f1f5f9">Risk gates</text>
+<text x="298" y="174" font-family="Arial,sans-serif" font-size="13" fill="#b5c4d8">Capital and exposure checks</text>
+<path d="M505 158 H525" stroke="#78c8c1" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="530" y="108" width="220" height="100" rx="12" fill="#1d2c42" stroke="#38526d"/>
+<text x="546" y="143" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#f1f5f9">Execution boundary</text>
+<text x="546" y="174" font-family="Arial,sans-serif" font-size="13" fill="#b5c4d8">Exchange adapter interface</text>
+<path d="M753 158 H773" stroke="#78c8c1" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="778" y="108" width="220" height="100" rx="12" fill="#1d2c42" stroke="#38526d"/>
+<text x="794" y="143" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#f1f5f9">Durable state</text>
+<text x="794" y="174" font-family="Arial,sans-serif" font-size="13" fill="#b5c4d8">SQLite + reconciliation</text>
+</svg>

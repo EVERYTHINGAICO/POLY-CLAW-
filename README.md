@@ -1,5 +1,9 @@
 # POLY-CLAW
 
+[![Validation](https://github.com/EVERYTHINGAICO/poly-claw/actions/workflows/rust.yml/badge.svg)](https://github.com/EVERYTHINGAICO/poly-claw/actions/workflows/rust.yml)
+
+![Execution boundaries](docs/architecture-overview.svg)
+
 POLY-CLAW is an experimental Rust research system for Polymarket execution architecture, risk gating, market lifecycle tracking, persistence, and reconciliation.
 
 The project is not presented as a profitable trading strategy. Its contribution is the engineering model: a typed, testable execution core for prediction-market trading research where strategy generation, risk validation, exchange execution, fill reconciliation, and durable state are treated as separate concerns.

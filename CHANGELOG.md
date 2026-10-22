@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-22 — Portfolio and atlas validation
+
+- Aligned the React plugin with Vite 8 and updated the frontend lockfile.
+- Used Node.js 22 for atlas validation.
+- Removed a leftover sandbox write-test file.
+- Added an architecture overview to the README.
+
 All notable changes to POLY-CLAW are documented here.
 
 This project separates software engineering evidence from trading-performance claims. A release version means the repository state is documented and reproducible; it does not imply live trading readiness or profitability.
